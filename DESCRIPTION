@@ -14,16 +14,26 @@ Description: This package aims to undergo bulk RNA-seq analyses using DESeq2 & G
     Subsequently, DESeq2 can be used to undergo differential expression analysis, which can be used for further
     GSEA using HALLMARK, GO & KEGG gene sets. The purpose of this package is to help in streamlining bulk RNA-seq
     analysis without too many chunks of code being used to format the data.
-License: What license is it under?
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 URL: https://github.com/karman-ks/bulkanalyses
 BugReports: https://github.com/karman-ks/bulkanalyses/issues
 Imports: 
+    AnnotationDbi,
+    clusterProfiler,
+    DESeq2,
+    dplyr,
     ggplot2,
+    ggrepel,
+    msigdbr,
+    org.Hs.eg.db,
     pheatmap,
     purrr,
     readr,
     stringr,
     SummarizedExperiment,
-    tibble
+    tibble,
+    tidyr
+BiocViews:
+Config/roxygen2/version: 8.0.0
