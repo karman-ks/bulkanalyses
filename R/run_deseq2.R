@@ -65,8 +65,13 @@ run_deseq2 <- function(count_data, metadata, design_formula, reference_factor, r
 #'
 print_results <- function(deseq2_res, file_name) {
 
-  #Order resulst from DESeq2 according to p-value
-  res_ordered <- deseq2_res[order(deseq2_res[[pvalue]]), ]
+  #Ensure that DESeq2 results are used for printing file
+  if (!"pvalue" %in% colnames(deseq2_res)) {
+    stop("ERROR: 'pvalue' column cannot be found. Please ensure that DESeq2 results are used...")
+  }
+
+  #Order results from DESeq2 according to p-value
+  res_ordered <- deseq2_res[order(deseq2_res[["pvalue"]]), ]
 
   message("\n--- Top 6 Ordered DESeq2 Results ---")
   print(utils::head(res_ordered))
