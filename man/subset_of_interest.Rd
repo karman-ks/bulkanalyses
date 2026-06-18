@@ -13,7 +13,7 @@ subset_of_interest(sample_list, count_data, metadata, matching_sample_names)
 
 \item{metadata}{Data frame. The aligned metadata from the match_annotations function.}
 
-\item{matching_sample_names}{Character. The column within the metadata data frame by which samples will be subsetted (i.e. cleaned sample names).}
+\item{matching_sample_names}{Character. The column within the metadata data frame by which samples will be subsetted (i.e. cleaned sample names/clean_col).}
 }
 \value{
 A named list containing the subsetted & matched counts data frame & metadata.

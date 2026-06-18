@@ -1,10 +1,12 @@
 #Read in annotations .csv file & match file names with annotations
 #' Read in annotations & match sample names in counts dataframe with metadata
 #'
-#' This function works to read in the a metadata .csv file as a dataframe &-
-#' -then matches a certain sample name with its associated label & replaces-
+#' This function works to read in the a metadata .csv file as a dataframe &
+#' -then matches a certain sample name with its associated label & replaces
 #' -a 'messy' label with the clean label (e.g. sample1_trimmed_sorted.txt to sample1_treated).
 #' Finally, the data are sorted to ensure all data is in the same order in both count data frame & metadata.
+#' NOTE: This function uses stringr::str_detect so match_col need to be unique for each sample to act as a unique
+#' identifier for the function, otherwise it will fail & match incorrectly.
 #'
 #' @param count_data Data frame. The dataframe read in from featureCounts- or HTSeq-generated reads.
 #' @param metadata_path Character. The path to the metadata .csv file.
@@ -60,6 +62,10 @@ match_annotations <- function(count_data, metadata_path, match_col, clean_col) {
   #Ensure row names of metadata match the clean column
   rownames(metadata_sorted) <- metadata_sorted[[clean_col]]
 
+  if (!all(rownames(metadata_sorted) == metadata_sorted[[clean_col]])) {
+    stop("ERROR: Something went wrong. Metadata row names do not match the specified column.")
+  }
+
   message("Yay! Count data & metadata are now cleaned & aligned!")
 
   return(list(
@@ -78,7 +84,7 @@ match_annotations <- function(count_data, metadata_path, match_col, clean_col) {
 #' @param sample_list Character vector. A list of specific samples by which analysis will be undertaken (e.g. all control & treated in one cell line).
 #' @param count_data Data frame. The cleaned count data frame from the match_annotations function.
 #' @param metadata Data frame. The aligned metadata from the match_annotations function.
-#' @param matching_sample_names Character. The column within the metadata data frame by which samples will be subsetted (i.e. cleaned sample names).
+#' @param matching_sample_names Character. The column within the metadata data frame by which samples will be subsetted (i.e. cleaned sample names/clean_col).
 #'
 #' @returns A named list containing the subsetted & matched counts data frame & metadata.
 #' @export

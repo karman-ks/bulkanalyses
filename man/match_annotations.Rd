@@ -19,8 +19,10 @@ match_annotations(count_data, metadata_path, match_col, clean_col)
 A a named list containing both the cleaned up & matched counts data & metadata.
 }
 \description{
-This function works to read in the a metadata .csv file as a dataframe &-
--then matches a certain sample name with its associated label & replaces-
+This function works to read in the a metadata .csv file as a dataframe &
+-then matches a certain sample name with its associated label & replaces
 -a 'messy' label with the clean label (e.g. sample1_trimmed_sorted.txt to sample1_treated).
 Finally, the data are sorted to ensure all data is in the same order in both count data frame & metadata.
+NOTE: This function uses stringr::str_detect so match_col need to be unique for each sample to act as a unique
+identifier for the function, otherwise it will fail & match incorrectly.
 }
