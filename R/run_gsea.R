@@ -29,7 +29,7 @@ run_gsea <- function(res_df, database = c("HALLMARK", "GO", "KEGG"), stat = c("l
 
   #Ensure results are in a data frame & clean data frame column containing data of interest
   res_df <- as.data.frame(res_df)
-  res_df <- res_df[!is.na(res_df[[stat_col]])]
+  res_df <- res_df[!is.na(res_df[[stat_col]]), ]
   #Subset data & order in descending order for GSEA
   ranked_genes <- res_df[[stat_col]]
   names(ranked_genes) <- rownames(res_df)
@@ -41,7 +41,7 @@ run_gsea <- function(res_df, database = c("HALLMARK", "GO", "KEGG"), stat = c("l
   if (database == "HALLMARK") {
 
     #Download HALLMARK terms
-    hallmark_set <- msigdbr::msigdbr(species = "Homo sapiens", category = "H")
+    hallmark_set <- msigdbr::msigdbr(species = "Homo sapiens", collection = "H")
     hallmark_geneset <- hallmark_set[, c("gs_name", "ensembl_gene")]
 
     #Perform GSEA with the p-value cut off of 0.05, p-value adjustment method as Benjamini-Hochberg method for calculating FDR q-values

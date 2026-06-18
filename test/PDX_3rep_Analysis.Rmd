@@ -1,0 +1,423 @@
+---
+title: "Therapy Resistant PDX Analysis (3 reps)"
+author: "Karmanpreet Sukhija"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Using the BulkRNAnalyses package, HTSeq- & featurecounts-generated reads will be read in & used for DESeq2 differential expression analysis & GSEA using HALLMARK, KEGG & GO gene sets. Following from this, pathways of interest will be visualised with heatmaps of log values of gene expression. 
+
+#Enzalutamide-treated PDXs (167.2M Cx, 201.1A Cx)
+
+```{r mono-enza}
+library(bulkanalyses)
+
+#Read in HTSeq-generated counts 
+#all_data <- read_htseq_data("/Users/karmansukhija/Desktop/work (*ᴗ͈ˬᴗ͈)ꕤ*.ﾟ/PhD/2026/MURAL PDX Counts/HTSEQ_OUTPUT_POLYA")
+all_data <- read_featurecounts_data("/Users/karmansukhija/Desktop/work (*ᴗ͈ˬᴗ͈)ꕤ*.ﾟ/PhD/2026/MURAL PDX Counts/pdx_featurecounts_Q10.txt")
+
+#Read in annotation file & match annotations
+all_metadata <- match_annotations(all_data,
+                                        metadata_path = "/Users/karmansukhija/Desktop/work (*ᴗ͈ˬᴗ͈)ꕤ*.ﾟ/PhD/2026/MURAL PDX Counts/DOD Project_RNAExtraction_David Goode_181022.csv",
+                                        match_col = "Tube.label",
+                                        clean_col = "SAMPLE.ID")
+#Take out variables from list
+final_data <- all_metadata$counts_final
+final_metadata <- all_metadata$metadata_final
+
+#Subset PDX lines treated with Enzalutamide monotherapy
+enza_mono_data <- subset_of_interest(sample_list = c("201_1A_Cx-Enza-1", "201_1A_Cx-Enza-2", "201_1A_Cx-Enza-3", "201_1A_Cx-Vehicle-1",
+                                                     "201_1A_Cx-Vehicle-2", "201_1A_Cx-Vehicle-3", "167.2M_Cx-Enza-1", "167.2M_Cx-Enza-2",
+                                                     "167.2M_Cx-Enza-3", "167.2M_Cx-Vehicle-1", "167.2M_Cx-Vehicle-2",
+                                                     "167.2M_Cx-Vehicle-3"),
+                                     count_data = final_data,
+                                     metadata = final_metadata,
+                                     matching_sample_names = "SAMPLE.ID")
+
+enza_data <- enza_mono_data$matched_data_of_interest
+enza_metadata <- enza_mono_data$matched_labels_of_interest
+
+#Run DESeq2 pipeline 
+enza_res <- run_deseq2(count_data = enza_data,
+                       metadata = enza_metadata,
+                       design_formula = ~ PDX_LINE + Treatment,
+                       reference_factor = "Treatment",
+                       reference_level = "Talazoparib + Carboplatin vehicle",
+                       contrast_vector = c("Treatment", "Enzalutamide", "Talazoparib + Carboplatin vehicle"))
+
+#Extract DESeq2 results
+enza_dds <- enza_res$dds_object
+enza_res_table <- enza_res$results_table
+
+#Print DESeq2 results
+print_results(enza_res_table, file_name = "enza_PDXs_DEGs.csv")
+
+#Generate volcano plot from DESeq2 results 
+generate_volcano(enza_res_table)
+
+#Generate PCA plot from DESeq2 results using rlog transformation as (n < 30)
+generate_pca(enza_dds, transformation = "rlog", color_by = "Treatment", shape_by = "PDX_LINE")
+
+#Run GSEA using HALLMARK gene sets & generate dotplot
+enza_hallmark_res <- run_gsea(enza_res_table, database = "HALLMARK", stat = "stat", seed = 1234)
+
+library(enrichplot)
+library(ggplot2)
+
+dotplot(enza_hallmark_res, showCategory = 10, split = ".sign") + 
+    facet_grid(.~.sign) +
+    theme_bw() +
+    labs(title = "Top 10 HALLMARK Pathway Enrichment for 201.1A Cx & 167.2M Cx Enzalutamide vs Vehicle Control") +
+    theme(
+      # 1. Main Plot Title
+      plot.title = element_text(size = 20, face = "bold", hjust = 1), 
+      
+      # 2. Axis Titles (e.g., "GeneRatio" on the X-axis)
+      axis.title.x = element_text(size = 20, face = "bold"),
+      axis.title.y = element_text(size = 20, face = "bold"),
+      
+      # 3. Axis Text (The pathway names on the Y, the numbers on the X)
+      axis.text.y = element_text(size = 20, face = "bold"), 
+      axis.text.x = element_text(size = 20, face = "bold"),
+      
+      # 4. Facet Labels (The "activated" and "suppressed" grey boxes at the top)
+      strip.text = element_text(size = 20, face = "bold"),
+      
+      # 5. Legend Text (The size/color scales on the right)
+      legend.title = element_text(size = 20, face = "bold"),
+      legend.text = element_text(size = 20)
+    )
+
+#Run GSEA using GO gene sets & generate dotplot
+enza_go_res <- run_gsea(enza_res_table, database = "GO", stat = "stat", seed = 1234)
+
+dotplot(enza_go_res, showCategory = 10, split = ".sign") + 
+    facet_grid(.~.sign) +
+    theme_bw() +
+    labs(title = "Top 10 GO Pathway Enrichment for 201.1A Cx & 167.2M Cx Enzalutamide vs Vehicle Control") +
+    theme(
+      # 1. Main Plot Title
+      plot.title = element_text(size = 20, face = "bold", hjust = 1), 
+      
+      # 2. Axis Titles (e.g., "GeneRatio" on the X-axis)
+      axis.title.x = element_text(size = 20, face = "bold"),
+      axis.title.y = element_text(size = 20, face = "bold"),
+      
+      # 3. Axis Text (The pathway names on the Y, the numbers on the X)
+      axis.text.y = element_text(size = 20, face = "bold"), 
+      axis.text.x = element_text(size = 20, face = "bold"),
+      
+      # 4. Facet Labels (The "activated" and "suppressed" grey boxes at the top)
+      strip.text = element_text(size = 20, face = "bold"),
+      
+      # 5. Legend Text (The size/color scales on the right)
+      legend.title = element_text(size = 20, face = "bold"),
+      legend.text = element_text(size = 20)
+    )
+
+#Run GSEA using KEGG gene sets & generate dotplot
+enza_kegg_res <- run_gsea(enza_res_table, database = "KEGG", stat = "stat", seed = 1234)
+
+dotplot(enza_kegg_res, showCategory = 10, split = ".sign") + 
+    facet_grid(.~.sign) +
+    theme_bw() +
+    labs(title = "Top 10 KEGG Pathway Enrichment for 201.1A Cx & 167.2M Cx Enzalutamide vs Vehicle Control") +
+    theme(
+      # 1. Main Plot Title
+      plot.title = element_text(size = 20, face = "bold", hjust = 1), 
+      
+      # 2. Axis Titles (e.g., "GeneRatio" on the X-axis)
+      axis.title.x = element_text(size = 20, face = "bold"),
+      axis.title.y = element_text(size = 20, face = "bold"),
+      
+      # 3. Axis Text (The pathway names on the Y, the numbers on the X)
+      axis.text.y = element_text(size = 20, face = "bold"), 
+      axis.text.x = element_text(size = 20, face = "bold"),
+      
+      # 4. Facet Labels (The "activated" and "suppressed" grey boxes at the top)
+      strip.text = element_text(size = 20, face = "bold"),
+      
+      # 5. Legend Text (The size/color scales on the right)
+      legend.title = element_text(size = 20, face = "bold"),
+      legend.text = element_text(size = 20)
+    )
+
+#Generate heatmaps of pathways of interest
+print(enza_hallmark_res$Description)
+
+generate_heatmap_of_interest(enza_hallmark_res, enza_dds, transformation = "rlog", annotations = c("Treatment", "PDX_LINE", "Harvest_Interval"),
+                             pathway_of_interest = "INTERFERON_ALPHA_RESPONSE")
+
+```
+
+#Talazoparib-treated PDXs (167.2M Cx, 201.1A Cx, 201.2A Cx, 305R Cx, 426M Cx)
+
+```{r mono-tala}
+#Subset PDX lines treated with Talazoparib monotherapy
+tala_mono_data <- subset_of_interest(sample_list = c("201_1A_Cx-Tala-1", "201_1A_Cx-Tala-2", "201_1A_Cx-Tala-3", "201_1A_Cx-Vehicle-1",
+                                                     "201_1A_Cx-Vehicle-2", "201_1A_Cx-Vehicle-3", "167.2M_Cx-Tala-1", "167.2M_Cx-Tala-2",
+                                                     "167.2M_Cx-Tala-3", "167.2M_Cx-Vehicle-1", "167.2M_Cx-Vehicle-2",
+                                                     "167.2M_Cx-Vehicle-3", "201_2A_Cx-Tala-1", "201_2A_Cx-Tala-2", "201_2A_Cx-Tala-3", "201_2A_Cx-Vehicle-1",
+                                                     "201_2A_Cx-Vehicle-2", "201_2A_Cx-Vehicle-3", "305_Cx-Tala-1", "305_Cx-Tala-2",
+                                                     "305_Cx-Tala-3", "305_Cx-Vehicle-1", "305_Cx-Vehicle-2",
+                                                     "305_Cx-Vehicle-3", "426_Cx-Tala-1", "426_Cx-Tala-2",
+                                                     "426_Cx-Tala-3", "426_Cx-Vehicle-1", "426_Cx-Vehicle-2",
+                                                     "426_Cx-Vehicle-3"),
+                                     count_data = final_data,
+                                     metadata = final_metadata,
+                                     matching_sample_names = "SAMPLE.ID")
+
+tala_data <- tala_mono_data$matched_data_of_interest
+tala_metadata <- tala_mono_data$matched_labels_of_interest
+
+#Run DESeq2 pipeline 
+tala_res <- run_deseq2(count_data = tala_data,
+                       metadata = tala_metadata,
+                       design_formula = ~ PDX_LINE + Treatment,
+                       reference_factor = "Treatment",
+                       reference_level = "Talazoparib + Carboplatin vehicle",
+                       contrast_vector = c("Treatment", "Talazoparib", "Talazoparib + Carboplatin vehicle"))
+
+#Extract DESeq2 results
+tala_dds <- tala_res$dds_object
+tala_res_table <- tala_res$results_table
+
+#Print DESeq2 results
+print_results(tala_res_table, file_name = "tala_PDXs_DEGs.csv")
+
+#Generate volcano plot from DESeq2 results 
+generate_volcano(tala_res_table)
+
+#Generate PCA plot from DESeq2 results using rlog transformation as (n < 30)
+generate_pca(tala_dds, transformation = "rlog", color_by = "Treatment", shape_by = "PDX_LINE")
+
+#Run GSEA using HALLMARK gene sets & generate dotplot
+tala_hallmark_res <- run_gsea(tala_res_table, database = "HALLMARK", stat = "stat", seed = 1234)
+
+library(enrichplot)
+library(ggplot2)
+
+dotplot(tala_hallmark_res, showCategory = 10, split = ".sign") + 
+    facet_grid(.~.sign) +
+    theme_bw() +
+    labs(title = "Top 10 HALLMARK Pathway Enrichment for 5 PDX lines Talazoparib vs Vehicle Control") +
+    theme(
+      # 1. Main Plot Title
+      plot.title = element_text(size = 20, face = "bold", hjust = 1), 
+      
+      # 2. Axis Titles (e.g., "GeneRatio" on the X-axis)
+      axis.title.x = element_text(size = 20, face = "bold"),
+      axis.title.y = element_text(size = 20, face = "bold"),
+      
+      # 3. Axis Text (The pathway names on the Y, the numbers on the X)
+      axis.text.y = element_text(size = 20, face = "bold"), 
+      axis.text.x = element_text(size = 20, face = "bold"),
+      
+      # 4. Facet Labels (The "activated" and "suppressed" grey boxes at the top)
+      strip.text = element_text(size = 20, face = "bold"),
+      
+      # 5. Legend Text (The size/color scales on the right)
+      legend.title = element_text(size = 20, face = "bold"),
+      legend.text = element_text(size = 20)
+    )
+
+#Run GSEA using GO gene sets & generate dotplot
+tala_go_res <- run_gsea(tala_res_table, database = "GO", stat = "stat", seed = 1234)
+
+dotplot(tala_go_res, showCategory = 10, split = ".sign") + 
+    facet_grid(.~.sign) +
+    theme_bw() +
+    labs(title = "Top 10 GO Pathway Enrichment for 5 PDX Lines Talazoparib vs Vehicle Control") +
+    theme(
+      # 1. Main Plot Title
+      plot.title = element_text(size = 20, face = "bold", hjust = 1), 
+      
+      # 2. Axis Titles (e.g., "GeneRatio" on the X-axis)
+      axis.title.x = element_text(size = 20, face = "bold"),
+      axis.title.y = element_text(size = 20, face = "bold"),
+      
+      # 3. Axis Text (The pathway names on the Y, the numbers on the X)
+      axis.text.y = element_text(size = 20, face = "bold"), 
+      axis.text.x = element_text(size = 20, face = "bold"),
+      
+      # 4. Facet Labels (The "activated" and "suppressed" grey boxes at the top)
+      strip.text = element_text(size = 20, face = "bold"),
+      
+      # 5. Legend Text (The size/color scales on the right)
+      legend.title = element_text(size = 20, face = "bold"),
+      legend.text = element_text(size = 20)
+    )
+
+#Run GSEA using KEGG gene sets & generate dotplot
+tala_kegg_res <- run_gsea(tala_res_table, database = "KEGG", stat = "stat", seed = 1234)
+
+dotplot(tala_kegg_res, showCategory = 10, split = ".sign") + 
+    facet_grid(.~.sign) +
+    theme_bw() +
+    labs(title = "Top 10 KEGG Pathway Enrichment for 5 PDX lines Talazoparib vs Vehicle Control") +
+    theme(
+      # 1. Main Plot Title
+      plot.title = element_text(size = 20, face = "bold", hjust = 1), 
+      
+      # 2. Axis Titles (e.g., "GeneRatio" on the X-axis)
+      axis.title.x = element_text(size = 20, face = "bold"),
+      axis.title.y = element_text(size = 20, face = "bold"),
+      
+      # 3. Axis Text (The pathway names on the Y, the numbers on the X)
+      axis.text.y = element_text(size = 20, face = "bold"), 
+      axis.text.x = element_text(size = 20, face = "bold"),
+      
+      # 4. Facet Labels (The "activated" and "suppressed" grey boxes at the top)
+      strip.text = element_text(size = 20, face = "bold"),
+      
+      # 5. Legend Text (The size/color scales on the right)
+      legend.title = element_text(size = 20, face = "bold"),
+      legend.text = element_text(size = 20)
+    )
+
+#Generate heatmaps of pathways of interest
+print(tala_hallmark_res$Description)
+
+generate_heatmap_of_interest(tala_hallmark_res, tala_dds, transformation = "rlog", annotations = c("Treatment", "PDX_LINE", "Harvest_Interval"),
+                             pathway_of_interest = "DNA_REPAIR")
+
+```
+
+#Carboplatin-treated PDXs (167.2M Cx, 201.1A Cx, 201.2A Cx, 305R Cx, 426M Cx)
+
+```{r mono-carbo}
+
+#Subset PDX lines treated with Carboplatin monotherapy
+carbo_mono_data <- subset_of_interest(sample_list = c("201_1A_Cx-Carbo-1", "201_1A_Cx-Carbo-2", "201_1A_Cx-Carbo-3", "201_1A_Cx-Vehicle-1",
+                                                     "201_1A_Cx-Vehicle-2", "201_1A_Cx-Vehicle-3", "167.2M_Cx-Carbo-1", "167.2M_Cx-Carbo-2",
+                                                     "167.2M_Cx-Carbo-3", "167.2M_Cx-Vehicle-1", "167.2M_Cx-Vehicle-2",
+                                                     "167.2M_Cx-Vehicle-3", "201_2A_Cx-Carbo-1", "201_2A_Cx-Carbo-2", "201_2A_Cx-Carbo-3", "201_2A_Cx-Vehicle-1",
+                                                     "201_2A_Cx-Vehicle-2", "201_2A_Cx-Vehicle-3", "305_Cx-Carbo-1", "305_Cx-Carbo-2",
+                                                     "305_Cx-Carbo-3", "305_Cx-Vehicle-1", "305_Cx-Vehicle-2",
+                                                     "305_Cx-Vehicle-3", "426_Cx-Carbo-1", "426_Cx-Carbo-2",
+                                                     "426_Cx-Carbo-3", "426_Cx-Vehicle-1", "426_Cx-Vehicle-2",
+                                                     "426_Cx-Vehicle-3"),
+                                     count_data = final_data,
+                                     metadata = final_metadata,
+                                     matching_sample_names = "SAMPLE.ID")
+
+carbo_data <- carbo_mono_data$matched_data_of_interest
+carbo_metadata <- carbo_mono_data$matched_labels_of_interest
+
+#Run DESeq2 pipeline 
+carbo_res <- run_deseq2(count_data = carbo_data,
+                       metadata = carbo_metadata,
+                       design_formula = ~ PDX_LINE + Treatment,
+                       reference_factor = "Treatment",
+                       reference_level = "Talazoparib + Carboplatin vehicle",
+                       contrast_vector = c("Treatment", "Carboplatin", "Talazoparib + Carboplatin vehicle"))
+
+#Extract DESeq2 results
+carbo_dds <- carbo_res$dds_object
+carbo_res_table <- carbo_res$results_table
+
+#Print DESeq2 results
+print_results(carbo_res_table, file_name = "carbo_PDXs_DEGs.csv")
+
+#Generate volcano plot from DESeq2 results 
+generate_volcano(carbo_res_table)
+
+#Generate PCA plot from DESeq2 results using rlog transformation as (n < 30)
+generate_pca(carbo_dds, transformation = "rlog", color_by = "Treatment", shape_by = "PDX_LINE")
+
+#Run GSEA using HALLMARK gene sets & generate dotplot
+carbo_hallmark_res <- run_gsea(carbo_res_table, database = "HALLMARK", stat = "stat", seed = 1234)
+
+library(enrichplot)
+library(ggplot2)
+
+dotplot(carbo_hallmark_res, showCategory = 10, split = ".sign") + 
+    facet_grid(.~.sign) +
+    theme_bw() +
+    labs(title = "Top 10 HALLMARK Pathway Enrichment for 5 PDX lines Carboplatin vs Vehicle Control") +
+    theme(
+      # 1. Main Plot Title
+      plot.title = element_text(size = 20, face = "bold", hjust = 1), 
+      
+      # 2. Axis Titles (e.g., "GeneRatio" on the X-axis)
+      axis.title.x = element_text(size = 20, face = "bold"),
+      axis.title.y = element_text(size = 20, face = "bold"),
+      
+      # 3. Axis Text (The pathway names on the Y, the numbers on the X)
+      axis.text.y = element_text(size = 20, face = "bold"), 
+      axis.text.x = element_text(size = 20, face = "bold"),
+      
+      # 4. Facet Labels (The "activated" and "suppressed" grey boxes at the top)
+      strip.text = element_text(size = 20, face = "bold"),
+      
+      # 5. Legend Text (The size/color scales on the right)
+      legend.title = element_text(size = 20, face = "bold"),
+      legend.text = element_text(size = 20)
+    )
+
+#Run GSEA using GO gene sets & generate dotplot
+carbo_go_res <- run_gsea(carbo_res_table, database = "GO", stat = "stat", seed = 1234)
+
+dotplot(carbo_go_res, showCategory = 10, split = ".sign") + 
+    facet_grid(.~.sign) +
+    theme_bw() +
+    labs(title = "Top 10 GO Pathway Enrichment for 5 PDX Lines Carboplatin vs Vehicle Control") +
+    theme(
+      # 1. Main Plot Title
+      plot.title = element_text(size = 20, face = "bold", hjust = 1), 
+      
+      # 2. Axis Titles (e.g., "GeneRatio" on the X-axis)
+      axis.title.x = element_text(size = 20, face = "bold"),
+      axis.title.y = element_text(size = 20, face = "bold"),
+      
+      # 3. Axis Text (The pathway names on the Y, the numbers on the X)
+      axis.text.y = element_text(size = 20, face = "bold"), 
+      axis.text.x = element_text(size = 20, face = "bold"),
+      
+      # 4. Facet Labels (The "activated" and "suppressed" grey boxes at the top)
+      strip.text = element_text(size = 20, face = "bold"),
+      
+      # 5. Legend Text (The size/color scales on the right)
+      legend.title = element_text(size = 20, face = "bold"),
+      legend.text = element_text(size = 20)
+    )
+
+#Run GSEA using KEGG gene sets & generate dotplot
+carbo_kegg_res <- run_gsea(carbo_res_table, database = "KEGG", stat = "stat", seed = 1234)
+
+dotplot(carbo_kegg_res, showCategory = 10, split = ".sign") + 
+    facet_grid(.~.sign) +
+    theme_bw() +
+    labs(title = "Top 10 KEGG Pathway Enrichment for 5 PDX lines Carboplatin vs Vehicle Control") +
+    theme(
+      # 1. Main Plot Title
+      plot.title = element_text(size = 20, face = "bold", hjust = 1), 
+      
+      # 2. Axis Titles (e.g., "GeneRatio" on the X-axis)
+      axis.title.x = element_text(size = 20, face = "bold"),
+      axis.title.y = element_text(size = 20, face = "bold"),
+      
+      # 3. Axis Text (The pathway names on the Y, the numbers on the X)
+      axis.text.y = element_text(size = 20, face = "bold"), 
+      axis.text.x = element_text(size = 20, face = "bold"),
+      
+      # 4. Facet Labels (The "activated" and "suppressed" grey boxes at the top)
+      strip.text = element_text(size = 20, face = "bold"),
+      
+      # 5. Legend Text (The size/color scales on the right)
+      legend.title = element_text(size = 20, face = "bold"),
+      legend.text = element_text(size = 20)
+    )
+
+#Generate heatmaps of pathways of interest
+print(carbo_hallmark_res$Description)
+
+generate_heatmap_of_interest(carbo_hallmark_res, tala_dds, transformation = "rlog", annotations = c("Treatment", "PDX_LINE", "Harvest_Interval"),
+                             pathway_of_interest = "HYPOXIA")
+
+```
+

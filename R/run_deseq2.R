@@ -82,5 +82,5 @@ print_results <- function(deseq2_res, file_name) {
 
   utils::write.csv(res_export, file = file_name, row.names = FALSE)
 
-  message("Yay! Successfully written", file_name, ", ordered by p-value!")
+  message("Yay! Successfully written ", file_name, ", ordered by p-value!")
 }

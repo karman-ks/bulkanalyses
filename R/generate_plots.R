@@ -20,6 +20,9 @@ generate_volcano <- function(res_df, padj_cutoff = 0.05, lfc_cutoff = 1, map_ens
   #Ensures that the provided results are in a data frame
   res_df <- as.data.frame(res_df)
 
+  #Remove any N/A padj values
+  res_df <- res_df[!is.na(res_df[["padj"]]), ]
+
   #Setting parameters for LFC & adjusted p-value cutoffs.
   res_df <- res_df |>
     dplyr::mutate(expression = dplyr::case_when(
@@ -110,7 +113,7 @@ generate_volcano <- function(res_df, padj_cutoff = 0.05, lfc_cutoff = 1, map_ens
 generate_pca <- function(deseq2_object, transformation = c("vst", "rlog"), color_by, shape_by = NULL) {
 
   #Match transformation variable to the argument provided
-  transformation(match.arg(transformation))
+  transformation <- match.arg(transformation)
 
   message(paste("Applying", transformation, "transformation..."))
   if (transformation == "vst") {
