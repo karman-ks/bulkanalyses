@@ -24,19 +24,19 @@ all_data <- read_featurecounts_data("/Users/karmansukhija/Desktop/work (*ᴗ͈ˬ
 all_metadata <- match_annotations(all_data,
                                         metadata_path = "/Users/karmansukhija/Desktop/work (*ᴗ͈ˬᴗ͈)ꕤ*.ﾟ/PhD/2026/MURAL PDX Counts/DOD Project_RNAExtraction_David Goode_181022.csv",
                                         match_col = "Tube.label",
-                                        clean_col = "SAMPLE.ID")
+                                        clean_col = "Sample_Name")
 #Take out variables from list
 final_data <- all_metadata$counts_final
 final_metadata <- all_metadata$metadata_final
 
 #Subset PDX lines treated with Enzalutamide monotherapy
-enza_mono_data <- subset_of_interest(sample_list = c("201_1A_Cx-Enza-1", "201_1A_Cx-Enza-2", "201_1A_Cx-Enza-3", "201_1A_Cx-Vehicle-1",
-                                                     "201_1A_Cx-Vehicle-2", "201_1A_Cx-Vehicle-3", "167.2M_Cx-Enza-1", "167.2M_Cx-Enza-2",
-                                                     "167.2M_Cx-Enza-3", "167.2M_Cx-Vehicle-1", "167.2M_Cx-Vehicle-2",
-                                                     "167.2M_Cx-Vehicle-3"),
+enza_mono_data <- subset_of_interest(sample_list = c("Enza_201.1A-Cx-1", "Enza_201.1A-Cx-2", "Enza_201.1A-Cx-3", 
+                                                     "Vehicle_201.1A-Cx-1", "Vehicle_201.1A-Cx-2", "Vehicle_201.1A-Cx-3",
+                                                     "Enza_167.2M-Cx-1", "Enza_167.2M-Cx-2", "Enza_167.2M-Cx-3", 
+                                                     "Vehicle_167.2M-Cx-1", "Vehicle_167.2M-Cx-2", "Vehicle_167.2M-Cx-3"),
                                      count_data = final_data,
                                      metadata = final_metadata,
-                                     matching_sample_names = "SAMPLE.ID")
+                                     matching_sample_names = "Sample_Name")
 
 enza_data <- enza_mono_data$matched_data_of_interest
 enza_metadata <- enza_mono_data$matched_labels_of_interest
@@ -158,18 +158,19 @@ generate_heatmap_of_interest(enza_hallmark_res, enza_dds, transformation = "rlog
 
 ```{r mono-tala}
 #Subset PDX lines treated with Talazoparib monotherapy
-tala_mono_data <- subset_of_interest(sample_list = c("201_1A_Cx-Tala-1", "201_1A_Cx-Tala-2", "201_1A_Cx-Tala-3", "201_1A_Cx-Vehicle-1",
-                                                     "201_1A_Cx-Vehicle-2", "201_1A_Cx-Vehicle-3", "167.2M_Cx-Tala-1", "167.2M_Cx-Tala-2",
-                                                     "167.2M_Cx-Tala-3", "167.2M_Cx-Vehicle-1", "167.2M_Cx-Vehicle-2",
-                                                     "167.2M_Cx-Vehicle-3", "201_2A_Cx-Tala-1", "201_2A_Cx-Tala-2", "201_2A_Cx-Tala-3", "201_2A_Cx-Vehicle-1",
-                                                     "201_2A_Cx-Vehicle-2", "201_2A_Cx-Vehicle-3", "305_Cx-Tala-1", "305_Cx-Tala-2",
-                                                     "305_Cx-Tala-3", "305_Cx-Vehicle-1", "305_Cx-Vehicle-2",
-                                                     "305_Cx-Vehicle-3", "426_Cx-Tala-1", "426_Cx-Tala-2",
-                                                     "426_Cx-Tala-3", "426_Cx-Vehicle-1", "426_Cx-Vehicle-2",
-                                                     "426_Cx-Vehicle-3"),
+tala_mono_data <- subset_of_interest(sample_list = c("Tala_201.1A-Cx-1", "Tala_201.1A-Cx-2", "Tala_201.1A-Cx-3", 
+                                                     "Vehicle_201.1A-Cx-1", "Vehicle_201.1A-Cx-2", "Vehicle_201.1A-Cx-3", 
+                                                     "Tala_167.2M-Cx-1", "Tala_167.2M-Cx-2", "Tala_167.2M-Cx-3", 
+                                                     "Vehicle_167.2M-Cx-1", "Vehicle_167.2M-Cx-2", "Vehicle_167.2M-Cx-3", 
+                                                     "Tala_201.2A-Cx-1", "Tala_201.2A-Cx-2", "Tala_201.2A-Cx-3",
+                                                     "Vehicle_201.2A-Cx-1", "Vehicle_201.2A-Cx-2", "Vehicle_201.2A-Cx-3", 
+                                                     "Tala_305R-Cx-1", "Tala_305R-Cx-2", "Tala_305R-Cx-3", 
+                                                     "Vehicle_305R-Cx-1", "Vehicle_305R-Cx-2", "Vehicle_305R-Cx-3",
+                                                     "Tala_426M-Cx-1", "Tala_426M-Cx-2", "Tala_426M-Cx-3", 
+                                                     "Vehicle_426M-Cx-1", "Vehicle_426M-Cx-2", "Vehicle_426M-Cx-3"),
                                      count_data = final_data,
                                      metadata = final_metadata,
-                                     matching_sample_names = "SAMPLE.ID")
+                                     matching_sample_names = "Sample_Name")
 
 tala_data <- tala_mono_data$matched_data_of_interest
 tala_metadata <- tala_mono_data$matched_labels_of_interest
@@ -292,18 +293,19 @@ generate_heatmap_of_interest(tala_hallmark_res, tala_dds, transformation = "rlog
 ```{r mono-carbo}
 
 #Subset PDX lines treated with Carboplatin monotherapy
-carbo_mono_data <- subset_of_interest(sample_list = c("201_1A_Cx-Carbo-1", "201_1A_Cx-Carbo-2", "201_1A_Cx-Carbo-3", "201_1A_Cx-Vehicle-1",
-                                                     "201_1A_Cx-Vehicle-2", "201_1A_Cx-Vehicle-3", "167.2M_Cx-Carbo-1", "167.2M_Cx-Carbo-2",
-                                                     "167.2M_Cx-Carbo-3", "167.2M_Cx-Vehicle-1", "167.2M_Cx-Vehicle-2",
-                                                     "167.2M_Cx-Vehicle-3", "201_2A_Cx-Carbo-1", "201_2A_Cx-Carbo-2", "201_2A_Cx-Carbo-3", "201_2A_Cx-Vehicle-1",
-                                                     "201_2A_Cx-Vehicle-2", "201_2A_Cx-Vehicle-3", "305_Cx-Carbo-1", "305_Cx-Carbo-2",
-                                                     "305_Cx-Carbo-3", "305_Cx-Vehicle-1", "305_Cx-Vehicle-2",
-                                                     "305_Cx-Vehicle-3", "426_Cx-Carbo-1", "426_Cx-Carbo-2",
-                                                     "426_Cx-Carbo-3", "426_Cx-Vehicle-1", "426_Cx-Vehicle-2",
-                                                     "426_Cx-Vehicle-3"),
+carbo_mono_data <- subset_of_interest(sample_list = c("Carbo_201.1A-Cx-1", "Carbo_201.1A-Cx-2", "Carbo_201.1A-Cx-3", 
+                                                     "Vehicle_201.1A-Cx-1", "Vehicle_201.1A-Cx-2", "Vehicle_201.1A-Cx-3", 
+                                                     "Carbo_167.2M-Cx-1", "Carbo_167.2M-Cx-2", "Carbo_167.2M-Cx-3", 
+                                                     "Vehicle_167.2M-Cx-1", "Vehicle_167.2M-Cx-2", "Vehicle_167.2M-Cx-3", 
+                                                     "Carbo_201.2A-Cx-1", "Carbo_201.2A-Cx-2", "Carbo_201.2A-Cx-3",
+                                                     "Vehicle_201.2A-Cx-1", "Vehicle_201.2A-Cx-2", "Vehicle_201.2A-Cx-3", 
+                                                     "Carbo_305R-Cx-1", "Carbo_305R-Cx-2", "Carbo_305R-Cx-3", 
+                                                     "Vehicle_305R-Cx-1", "Vehicle_305R-Cx-2", "Vehicle_305R-Cx-3",
+                                                     "Carbo_426M-Cx-1", "Carbo_426M-Cx-2", "Carbo_426M-Cx-3", 
+                                                     "Vehicle_426M-Cx-1", "Vehicle_426M-Cx-2", "Vehicle_426M-Cx-3"),
                                      count_data = final_data,
                                      metadata = final_metadata,
-                                     matching_sample_names = "SAMPLE.ID")
+                                     matching_sample_names = "Sample_Name")
 
 carbo_data <- carbo_mono_data$matched_data_of_interest
 carbo_metadata <- carbo_mono_data$matched_labels_of_interest

@@ -21,6 +21,11 @@ run_deseq2 <- function(count_data, metadata, design_formula, reference_factor, r
   #Ensure all values in the counts data are integers & data is within a matrix for the DESeq2 pipeline
   count_matrix <- round(as.matrix(count_data))
 
+  #Ensure row names of metadata match the column names of the count matrix
+  if (!all(rownames(metadata) == colnames(count_matrix))) {
+    stop("ERROR: Metadata row names do not match count matrix column names")
+  }
+
   message("Creating DESeq2 object...")
 
   dds <- DESeq2::DESeqDataSetFromMatrix(countData = count_matrix,

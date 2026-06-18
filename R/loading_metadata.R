@@ -57,6 +57,9 @@ match_annotations <- function(count_data, metadata_path, match_col, clean_col) {
     stop("ERROR: Final alignments do not match. Columns & rows of count data & metadata do not match.")
   }
 
+  #Ensure row names of metadata match the clean column
+  rownames(metadata_sorted) <- metadata_sorted[[clean_col]]
+
   message("Yay! Count data & metadata are now cleaned & aligned!")
 
   return(list(
