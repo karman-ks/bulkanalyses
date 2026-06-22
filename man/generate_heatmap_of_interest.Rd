@@ -9,7 +9,10 @@ generate_heatmap_of_interest(
   deseq2_object,
   transformation = c("vst", "rlog"),
   annotations,
-  pathway_of_interest
+  pathway_of_interest,
+  filename,
+  width = 10,
+  height = 10
 )
 }
 \arguments{
@@ -21,7 +24,13 @@ generate_heatmap_of_interest(
 
 \item{annotations}{Character or character vector. A single or multiple variables by which the user wishes to annotate samples by (e.g. c("Treatment", "Harvest_Time"))}
 
-\item{pathway_of_interest}{Character. The pathway of interest outputted from GSEA analysis (e.g. "KRAS_SIGNALLING_UP".}
+\item{pathway_of_interest}{Character. The pathway of interest outputted from GSEA analysis (e.g. "KRAS_SIGNALLING_UP").}
+
+\item{filename}{Character. A string depicting the file name of the heatmap image that the user wishes to save (e.g. sample1_heatmap.png)}
+
+\item{width}{Numerical. Width of resulting heatmap image. Default is 10.}
+
+\item{height}{Numerical. Height of resulting heatmap image. Default is 10.}
 }
 \value{
 Heatmap.

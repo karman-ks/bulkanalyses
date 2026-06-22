@@ -10,12 +10,15 @@
 #' @param deseq2_object A DESeq2Results object.
 #' @param transformation Character. "vst" or "rlog" depending on user intent & sample size. Blind is set to FALSE.
 #' @param annotations Character or character vector. A single or multiple variables by which the user wishes to annotate samples by (e.g. c("Treatment", "Harvest_Time"))
-#' @param pathway_of_interest Character. The pathway of interest outputted from GSEA analysis (e.g. "KRAS_SIGNALLING_UP".
+#' @param pathway_of_interest Character. The pathway of interest outputted from GSEA analysis (e.g. "KRAS_SIGNALLING_UP").
+#' @param filename Character. A string depicting the file name of the heatmap image that the user wishes to save (e.g. sample1_heatmap.png)
+#' @param width Numerical. Width of resulting heatmap image. Default is 10.
+#' @param height Numerical. Height of resulting heatmap image. Default is 10.
 #'
 #' @returns Heatmap.
 #' @export
 #'
-generate_heatmap_of_interest <- function(gsea_res, deseq2_object, transformation = c("vst", "rlog"), annotations, pathway_of_interest) {
+generate_heatmap_of_interest <- function(gsea_res, deseq2_object, transformation = c("vst", "rlog"), annotations, pathway_of_interest, filename, width = 10, height = 10) {
 
   #Match arguments for transformation based on input from function calling
   transformation <- match.arg(transformation)
@@ -74,7 +77,10 @@ generate_heatmap_of_interest <- function(gsea_res, deseq2_object, transformation
                                 main = paste0("Enriched Genes in ", pathway_of_interest),
                                 fontsize = 12,
                                 fontsize_row = 9,
-                                fontsize_col = 12
+                                fontsize_col = 12,
+                                filename = filename,
+                                width = width,
+                                height = height
                                 )
 
   return(heatmap_graph)
