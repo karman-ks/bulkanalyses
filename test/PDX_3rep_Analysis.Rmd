@@ -101,22 +101,22 @@ dotplot(enza_go_res, showCategory = 10, split = ".sign") +
     labs(title = "Top 10 GO Pathway Enrichment for 201.1A Cx & 167.2M Cx Enzalutamide vs Vehicle Control") +
     theme(
       # 1. Main Plot Title
-      plot.title = element_text(size = 20, face = "bold", hjust = 1), 
+      plot.title = element_text(size = 10, face = "bold", hjust = 1), 
       
       # 2. Axis Titles (e.g., "GeneRatio" on the X-axis)
-      axis.title.x = element_text(size = 20, face = "bold"),
-      axis.title.y = element_text(size = 20, face = "bold"),
+      axis.title.x = element_text(size = 10, face = "bold"),
+      axis.title.y = element_text(size = 10, face = "bold"),
       
       # 3. Axis Text (The pathway names on the Y, the numbers on the X)
-      axis.text.y = element_text(size = 20, face = "bold"), 
-      axis.text.x = element_text(size = 20, face = "bold"),
+      axis.text.y = element_text(size = 10, face = "bold"), 
+      axis.text.x = element_text(size = 10, face = "bold"),
       
       # 4. Facet Labels (The "activated" and "suppressed" grey boxes at the top)
-      strip.text = element_text(size = 20, face = "bold"),
+      strip.text = element_text(size = 10, face = "bold"),
       
       # 5. Legend Text (The size/color scales on the right)
-      legend.title = element_text(size = 20, face = "bold"),
-      legend.text = element_text(size = 20)
+      legend.title = element_text(size = 10, face = "bold"),
+      legend.text = element_text(size = 10)
     )
 
 #Run GSEA using KEGG gene sets & generate dotplot
@@ -128,29 +128,29 @@ dotplot(enza_kegg_res, showCategory = 10, split = ".sign") +
     labs(title = "Top 10 KEGG Pathway Enrichment for 201.1A Cx & 167.2M Cx Enzalutamide vs Vehicle Control") +
     theme(
       # 1. Main Plot Title
-      plot.title = element_text(size = 20, face = "bold", hjust = 1), 
+      plot.title = element_text(size = 10, face = "bold", hjust = 1), 
       
       # 2. Axis Titles (e.g., "GeneRatio" on the X-axis)
-      axis.title.x = element_text(size = 20, face = "bold"),
-      axis.title.y = element_text(size = 20, face = "bold"),
+      axis.title.x = element_text(size = 10, face = "bold"),
+      axis.title.y = element_text(size = 10, face = "bold"),
       
       # 3. Axis Text (The pathway names on the Y, the numbers on the X)
-      axis.text.y = element_text(size = 20, face = "bold"), 
-      axis.text.x = element_text(size = 20, face = "bold"),
+      axis.text.y = element_text(size = 10, face = "bold"), 
+      axis.text.x = element_text(size = 10, face = "bold"),
       
       # 4. Facet Labels (The "activated" and "suppressed" grey boxes at the top)
-      strip.text = element_text(size = 20, face = "bold"),
+      strip.text = element_text(size = 10, face = "bold"),
       
       # 5. Legend Text (The size/color scales on the right)
-      legend.title = element_text(size = 20, face = "bold"),
-      legend.text = element_text(size = 20)
+      legend.title = element_text(size = 10, face = "bold"),
+      legend.text = element_text(size = 10)
     )
 
 #Generate heatmaps of pathways of interest
 print(enza_hallmark_res$Description)
 
 generate_heatmap_of_interest(enza_hallmark_res, enza_dds, transformation = "rlog", annotations = c("Treatment", "PDX_LINE", "Harvest_Interval"),
-                             pathway_of_interest = "INTERFERON_ALPHA_RESPONSE")
+                             pathway_of_interest = "INTERFERON_ALPHA_RESPONSE", filename = "enza_heatmap.png")
 
 ```
 
@@ -235,22 +235,22 @@ dotplot(tala_go_res, showCategory = 10, split = ".sign") +
     labs(title = "Top 10 GO Pathway Enrichment for 5 PDX Lines Talazoparib vs Vehicle Control") +
     theme(
       # 1. Main Plot Title
-      plot.title = element_text(size = 20, face = "bold", hjust = 1), 
+      plot.title = element_text(size = 10, face = "bold", hjust = 1), 
       
       # 2. Axis Titles (e.g., "GeneRatio" on the X-axis)
-      axis.title.x = element_text(size = 20, face = "bold"),
-      axis.title.y = element_text(size = 20, face = "bold"),
+      axis.title.x = element_text(size = 10, face = "bold"),
+      axis.title.y = element_text(size = 10, face = "bold"),
       
       # 3. Axis Text (The pathway names on the Y, the numbers on the X)
-      axis.text.y = element_text(size = 20, face = "bold"), 
-      axis.text.x = element_text(size = 20, face = "bold"),
+      axis.text.y = element_text(size = 10, face = "bold"), 
+      axis.text.x = element_text(size = 10, face = "bold"),
       
       # 4. Facet Labels (The "activated" and "suppressed" grey boxes at the top)
-      strip.text = element_text(size = 20, face = "bold"),
+      strip.text = element_text(size = 10, face = "bold"),
       
       # 5. Legend Text (The size/color scales on the right)
-      legend.title = element_text(size = 20, face = "bold"),
-      legend.text = element_text(size = 20)
+      legend.title = element_text(size = 10, face = "bold"),
+      legend.text = element_text(size = 10)
     )
 
 #Run GSEA using KEGG gene sets & generate dotplot
@@ -262,29 +262,29 @@ dotplot(tala_kegg_res, showCategory = 10, split = ".sign") +
     labs(title = "Top 10 KEGG Pathway Enrichment for 5 PDX lines Talazoparib vs Vehicle Control") +
     theme(
       # 1. Main Plot Title
-      plot.title = element_text(size = 20, face = "bold", hjust = 1), 
+      plot.title = element_text(size = 10, face = "bold", hjust = 1), 
       
       # 2. Axis Titles (e.g., "GeneRatio" on the X-axis)
-      axis.title.x = element_text(size = 20, face = "bold"),
-      axis.title.y = element_text(size = 20, face = "bold"),
+      axis.title.x = element_text(size = 10, face = "bold"),
+      axis.title.y = element_text(size = 10, face = "bold"),
       
       # 3. Axis Text (The pathway names on the Y, the numbers on the X)
-      axis.text.y = element_text(size = 20, face = "bold"), 
-      axis.text.x = element_text(size = 20, face = "bold"),
+      axis.text.y = element_text(size = 10, face = "bold"), 
+      axis.text.x = element_text(size = 10, face = "bold"),
       
       # 4. Facet Labels (The "activated" and "suppressed" grey boxes at the top)
-      strip.text = element_text(size = 20, face = "bold"),
+      strip.text = element_text(size = 10, face = "bold"),
       
       # 5. Legend Text (The size/color scales on the right)
-      legend.title = element_text(size = 20, face = "bold"),
-      legend.text = element_text(size = 20)
+      legend.title = element_text(size = 10, face = "bold"),
+      legend.text = element_text(size = 10)
     )
 
 #Generate heatmaps of pathways of interest
 print(tala_hallmark_res$Description)
 
 generate_heatmap_of_interest(tala_hallmark_res, tala_dds, transformation = "rlog", annotations = c("Treatment", "PDX_LINE", "Harvest_Interval"),
-                             pathway_of_interest = "DNA_REPAIR")
+                             pathway_of_interest = "DNA_REPAIR", filename = "tala_heatmap.png")
 
 ```
 
@@ -370,22 +370,22 @@ dotplot(carbo_go_res, showCategory = 10, split = ".sign") +
     labs(title = "Top 10 GO Pathway Enrichment for 5 PDX Lines Carboplatin vs Vehicle Control") +
     theme(
       # 1. Main Plot Title
-      plot.title = element_text(size = 20, face = "bold", hjust = 1), 
+      plot.title = element_text(size = 10, face = "bold", hjust = 1), 
       
       # 2. Axis Titles (e.g., "GeneRatio" on the X-axis)
-      axis.title.x = element_text(size = 20, face = "bold"),
-      axis.title.y = element_text(size = 20, face = "bold"),
+      axis.title.x = element_text(size = 10, face = "bold"),
+      axis.title.y = element_text(size = 10, face = "bold"),
       
       # 3. Axis Text (The pathway names on the Y, the numbers on the X)
-      axis.text.y = element_text(size = 20, face = "bold"), 
-      axis.text.x = element_text(size = 20, face = "bold"),
+      axis.text.y = element_text(size = 10, face = "bold"), 
+      axis.text.x = element_text(size = 10, face = "bold"),
       
       # 4. Facet Labels (The "activated" and "suppressed" grey boxes at the top)
-      strip.text = element_text(size = 20, face = "bold"),
+      strip.text = element_text(size = 10, face = "bold"),
       
       # 5. Legend Text (The size/color scales on the right)
-      legend.title = element_text(size = 20, face = "bold"),
-      legend.text = element_text(size = 20)
+      legend.title = element_text(size = 10, face = "bold"),
+      legend.text = element_text(size = 10)
     )
 
 #Run GSEA using KEGG gene sets & generate dotplot
@@ -397,29 +397,29 @@ dotplot(carbo_kegg_res, showCategory = 10, split = ".sign") +
     labs(title = "Top 10 KEGG Pathway Enrichment for 5 PDX lines Carboplatin vs Vehicle Control") +
     theme(
       # 1. Main Plot Title
-      plot.title = element_text(size = 20, face = "bold", hjust = 1), 
+      plot.title = element_text(size = 10, face = "bold", hjust = 1), 
       
       # 2. Axis Titles (e.g., "GeneRatio" on the X-axis)
-      axis.title.x = element_text(size = 20, face = "bold"),
-      axis.title.y = element_text(size = 20, face = "bold"),
+      axis.title.x = element_text(size = 10, face = "bold"),
+      axis.title.y = element_text(size = 10, face = "bold"),
       
       # 3. Axis Text (The pathway names on the Y, the numbers on the X)
-      axis.text.y = element_text(size = 20, face = "bold"), 
-      axis.text.x = element_text(size = 20, face = "bold"),
+      axis.text.y = element_text(size = 10, face = "bold"), 
+      axis.text.x = element_text(size = 10, face = "bold"),
       
       # 4. Facet Labels (The "activated" and "suppressed" grey boxes at the top)
-      strip.text = element_text(size = 20, face = "bold"),
+      strip.text = element_text(size = 10, face = "bold"),
       
       # 5. Legend Text (The size/color scales on the right)
-      legend.title = element_text(size = 20, face = "bold"),
-      legend.text = element_text(size = 20)
+      legend.title = element_text(size = 10, face = "bold"),
+      legend.text = element_text(size = 10)
     )
 
 #Generate heatmaps of pathways of interest
 print(carbo_hallmark_res$Description)
 
 generate_heatmap_of_interest(carbo_hallmark_res, tala_dds, transformation = "rlog", annotations = c("Treatment", "PDX_LINE", "Harvest_Interval"),
-                             pathway_of_interest = "HYPOXIA")
+                             pathway_of_interest = "HYPOXIA", filename = "carbo_heatmap.png")
 
 ```
 
