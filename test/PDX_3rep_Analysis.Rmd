@@ -152,6 +152,33 @@ print(enza_hallmark_res$Description)
 generate_heatmap_of_interest(enza_hallmark_res, enza_dds, transformation = "rlog", annotations = c("Treatment", "PDX_LINE", "Harvest_Interval"),
                              pathway_of_interest = "INTERFERON_ALPHA_RESPONSE", filename = "enza_heatmap.png")
 
+
+
+```
+```{r test-heatmap}
+rsd_enza <- DESeq2::rlog(enza_dds, blind = FALSE)
+enza_res_ordered <- enza_res_table[order(enza_res_table$padj), ]
+top50_enza <- rownames(subset(enza_res_ordered, !is.na(padj)))[1:50]
+mat_enza <- SummarizedExperiment::assay(rsd_enza)[top50_enza, ]
+vehicle_samples <- rownames(subset(SummarizedExperiment::colData(enza_dds), Treatment == "Talazoparib + Carboplatin vehicle"))
+vehicle_means <- rowMeans(mat_enza[, vehicle_samples])
+mat_centered <- mat_enza - vehicle_means
+sample_info <- data.frame(condition = enza_dds$Treatment)
+rownames(sample_info) <- colnames(enza_dds)
+max_val <- max(abs(mat_centered))
+my_breaks <- seq(-max_val, max_val, length.out = 101)
+my_colors <- colorRampPalette(c("navy", "white", "firebrick3"))(100)
+
+pheatmap::pheatmap(mat_centered, 
+         cluster_rows = TRUE,          # Group genes with similar expression patterns
+         cluster_cols = TRUE,          # Group samples with similar expression patterns
+         show_rownames = TRUE,         # Display gene IDs
+         show_colnames = TRUE,         # Display sample IDs
+         annotation_col = sample_info, # Add the color bar for condition
+         scale = "none",               # CRITICAL: Prevent pheatmap from overriding our centering
+         color = my_colors,            # Apply our symmetric color palette
+         breaks = my_breaks,           # Apply our symmetric breaks
+         main = "Top 50 DEGs: Log2FC Relative to Vehicle Mean")
 ```
 
 #Talazoparib-treated PDXs (167.2M Cx, 201.1A Cx, 201.2A Cx, 305R Cx, 426M Cx)
