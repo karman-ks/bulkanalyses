@@ -19,6 +19,7 @@ Encoding: UTF-8
 LazyData: true
 URL: https://github.com/karman-ks/bulkanalyses
 BugReports: https://github.com/karman-ks/bulkanalyses/issues
+biocViews:
 Imports: 
     AnnotationDbi,
     clusterProfiler,
@@ -35,5 +36,4 @@ Imports:
     SummarizedExperiment,
     tibble,
     tidyr
-BiocViews:
 Config/roxygen2/version: 8.0.0
